@@ -1,10 +1,17 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 from blog.models import Post
 
 
 # Create your views here.
 def post_list(request):
-    posts = Post.objects.all()
-    return HttpResponse("Kajtek potrzebuje pomocy")
+    posts = Post.published.all()
+    return render(request, "blog/post/list.html", context={"posts": posts})
+
+def post_detail(request, year, month, day, slug):
+    post = get_object_or_404(Post , slug=slug, status='published',
+                             publish__year=year,
+                             publish__month=month,
+                             publish__day=day)
+    return render(request, 'blog/post/detail.html', context={"post": post})
